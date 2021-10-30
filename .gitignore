@@ -50,3 +50,4 @@ ios/
 web/
 windows/
 test/
+secrets.dart
