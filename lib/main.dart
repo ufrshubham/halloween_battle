@@ -72,26 +72,5 @@ class HalloweenBattle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MainMenu();
-    // return Scaffold(
-    //   body: Consumer<Supabase?>(
-    //     builder: (_, supabase, child) {
-    //       if (supabase != null) {
-    //         return Provider<GameState>(
-    //           create: (_) => GameState(supabase: supabase, gameRef: game),
-    //           dispose: (_, gameState) {
-    //             gameState.dispose();
-    //           },
-    //           builder: (_, child) {
-    //             return GameWidget(
-    //               game: game,
-    //             );
-    //           },
-    //         );
-    //       } else {
-    //         return const CircularProgressIndicator();
-    //       }
-    //     },
-    //   ),
-    // );
   }
 }

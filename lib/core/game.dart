@@ -1,6 +1,8 @@
+import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:halloween_battle/core/character.dart';
 import 'package:halloween_battle/models/game_state.dart';
+import 'package:flame/parallax.dart';
 
 class HalloweenBattleGame extends FlameGame {
   late GameState gameState;
@@ -27,8 +29,12 @@ class HalloweenBattleGame extends FlameGame {
   }
 
   @override
-  Future<void>? onLoad() {
+  Future<void>? onLoad() async {
     camera.viewport = FixedResolutionViewport(Vector2(160, 90));
+    final parallaxComponent = await ParallaxComponent.load(
+        [ParallaxImageData('HalloweenBackgroundNight.png')]);
+    add(parallaxComponent);
+
     return super.onLoad();
   }
 
