@@ -1,12 +1,9 @@
-import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:halloween_battle/core/game.dart';
 import 'package:halloween_battle/models/game_state.dart';
-import 'package:halloween_battle/screens/game_play.dart';
+import 'package:halloween_battle/screens/main_menu.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
-import 'main_menu.dart';
 
 class JoinGame extends StatelessWidget {
   static const String id = 'JoinGame';
@@ -22,9 +19,8 @@ class JoinGame extends StatelessWidget {
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/2_game_background.png'),
-            fit: BoxFit.fitWidth
-          ),
+              image: AssetImage('assets/images/2_game_background.png'),
+              fit: BoxFit.fitWidth),
         ),
         child: Center(
           child: Column(

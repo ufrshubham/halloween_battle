@@ -3,7 +3,6 @@ import 'package:halloween_battle/core/audio_manager.dart';
 import 'package:halloween_battle/core/game.dart';
 import 'package:halloween_battle/models/game_state.dart';
 import 'package:halloween_battle/screens/main_menu.dart';
-import 'package:provider/provider.dart';
 
 class GameOver extends StatelessWidget {
   static const String id = 'GameOver';

@@ -9,8 +9,7 @@ import 'package:halloween_battle/screens/main_menu.dart';
 import 'package:halloween_battle/widgets/game_over.dart';
 import 'package:halloween_battle/widgets/hud.dart';
 import 'package:provider/provider.dart';
-
-import '../main.dart';
+import 'package:halloween_battle/main.dart';
 
 class GamePlay extends StatelessWidget {
   const GamePlay({Key? key}) : super(key: key);

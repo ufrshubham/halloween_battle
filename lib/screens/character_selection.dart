@@ -4,9 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:halloween_battle/core/character_details.dart';
 import 'package:halloween_battle/core/game.dart';
 import 'package:halloween_battle/models/game_state.dart';
+import 'package:halloween_battle/screens/main_menu.dart';
 import 'package:provider/provider.dart';
-
-import 'main_menu.dart';
 
 class CharacterSelection extends StatelessWidget {
   static const String id = 'CharacterSelection';
