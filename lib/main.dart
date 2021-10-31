@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:halloween_battle/core/character.dart';
 import 'package:halloween_battle/core/game.dart';
 import 'package:halloween_battle/models/game_state.dart';
+import 'package:halloween_battle/screens/game_play.dart';
 import 'package:halloween_battle/screens/main_menu.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -34,14 +35,6 @@ class MyApp extends StatelessWidget {
             return MultiProvider(
               providers: [
                 Provider<Supabase>.value(value: supabase),
-                ChangeNotifierProvider<GameState>(
-                  lazy: false,
-                  create: (context) => GameState(
-                    supabase: Provider.of<Supabase>(context, listen: false),
-                    gameRef: game,
-                    characterType: CharacterType.ghost,
-                  ),
-                )
               ],
               child: MaterialApp(
                 title: 'Flutter Demo',
@@ -75,6 +68,6 @@ class HalloweenBattle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MainMenu();
+    return GamePlay();
   }
 }

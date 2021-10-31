@@ -1,71 +1,76 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:halloween_battle/core/game.dart';
 import 'package:halloween_battle/models/game_state.dart';
 import 'package:halloween_battle/screens/game_play.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../main.dart';
+import 'main_menu.dart';
 
 class JoinGame extends StatelessWidget {
-  const JoinGame({Key? key}) : super(key: key);
+  static const String id = 'JoinGame';
+  final HalloweenBattleGame gameRef;
+  const JoinGame({Key? key, required this.gameRef}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final gameState = gameRef.gameState;
+    gameState.supabase = Provider.of<Supabase>(context, listen: false);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Join Game',
-          style: TextStyle(fontSize: 25),
-        ),
-      ),
+      backgroundColor: Colors.transparent,
       body: Center(
-        child: TextField(
-          decoration: const InputDecoration(
-            hintText: 'Game ID',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(
-                Radius.circular(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              decoration: const InputDecoration(
+                hintText: 'Game ID',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(10),
+                  ),
+                ),
+              ),
+              style: const TextStyle(fontSize: 25),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              keyboardType: TextInputType.number,
+              onSubmitted: (value) async {
+                final gameState = gameRef.gameState;
+                final supabase = gameState.supabase;
+
+                final response = await supabase.client
+                    .from(GameState.tableName + GameState.whereIdIs)
+                    .update({
+                      GameState.player2CharacterTypeStr:
+                          gameState.currentCharacterType.index,
+                    })
+                    .eq('id', value)
+                    .execute();
+
+                if (response.status == 200 &&
+                    response.error == null &&
+                    response.data != null &&
+                    (response.data.length == 1)) {
+                  gameState.setAsGuest(int.parse(value), response.data[0]);
+                  gameRef.statGame();
+
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+            OutlinedButton(
+              onPressed: () {
+                gameRef.overlays.add(MainMenu.id);
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                'Back',
+                style: TextStyle(fontSize: 25),
               ),
             ),
-          ),
-          style: const TextStyle(fontSize: 30),
-          textAlign: TextAlign.center,
-          maxLines: 1,
-          keyboardType: TextInputType.number,
-          onSubmitted: (value) async {
-            final supabase = Provider.of<Supabase>(context, listen: false);
-            final gameState = Provider.of<GameState>(context, listen: false);
-            final response = await supabase.client
-                .from(GameState.tableName + GameState.whereIdIs)
-                .update({
-                  GameState.player2CharacterTypeStr:
-                      gameState.currentCharacterType.index,
-                })
-                .eq('id', value)
-                .execute();
-
-            if (response.status == 200 &&
-                response.error == null &&
-                response.data != null &&
-                (response.data.length == 1)) {
-              final gameState = Provider.of<GameState>(context, listen: false);
-              gameState.currentPlayerType = PlayerType.player2;
-              gameState.gameId = int.parse(value);
-              gameState.player2CharacterType = gameState.currentCharacterType;
-              gameState.updateFromMap(response.data[0]);
-
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                  builder: (_) {
-                    game.gameState = gameState;
-
-                    return const GamePlay();
-                  },
-                ),
-              );
-            }
-          },
+          ],
         ),
       ),
     );

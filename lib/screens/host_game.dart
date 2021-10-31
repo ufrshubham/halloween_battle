@@ -1,89 +1,87 @@
-import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:halloween_battle/core/game.dart';
 import 'package:halloween_battle/models/game_state.dart';
-import 'package:halloween_battle/screens/game_play.dart';
+import 'package:halloween_battle/screens/main_menu.dart';
+import 'package:halloween_battle/widgets/hud.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase/supabase.dart' as supa;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../main.dart';
-
 class HostGame extends StatelessWidget {
-  const HostGame({Key? key}) : super(key: key);
+  static const String id = 'HostGame';
+  final HalloweenBattleGame gameRef;
+
+  const HostGame({Key? key, required this.gameRef}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Consumer<Supabase>(
-          builder: (_, supabase, child) {
-            return FutureBuilder<supa.PostgrestResponse>(
-              future: supabase.client.from(GameState.tableName).insert({
-                GameState.player1CharacterTypeStr:
-                    Provider.of<GameState>(context, listen: false)
-                        .currentCharacterType
-                        .index
-              }).execute(),
-              builder: (_, responseSnapshot) {
-                switch (responseSnapshot.connectionState) {
-                  case ConnectionState.none:
-                  case ConnectionState.waiting:
-                  case ConnectionState.active:
-                    return const CircularProgressIndicator();
-                  case ConnectionState.done:
-                    if (responseSnapshot.hasData &&
-                        responseSnapshot.data != null &&
-                        responseSnapshot.data!.data != null) {
-                      final gameId = responseSnapshot.data!.data.first['id'];
-                      final gameState =
-                          Provider.of<GameState>(context, listen: false);
-                      gameState.currentPlayerType = PlayerType.player1;
-                      gameState.player1CharacterType =
-                          gameState.currentCharacterType;
-                      gameState.player2CharacterType = null;
-                      gameState.gameId = gameId;
+    final gameState = gameRef.gameState;
+    gameState.supabase = Provider.of<Supabase>(context, listen: false);
+    return Center(
+      child: FutureBuilder<supa.PostgrestResponse>(
+        future: gameState.supabase.client.from(GameState.tableName).insert({
+          GameState.player1CharacterTypeStr:
+              gameState.currentCharacterType.index
+        }).execute(),
+        builder: (_, responseSnapshot) {
+          switch (responseSnapshot.connectionState) {
+            case ConnectionState.none:
+            case ConnectionState.waiting:
+            case ConnectionState.active:
+              return const CircularProgressIndicator();
+            case ConnectionState.done:
+              if (responseSnapshot.hasData &&
+                  responseSnapshot.data != null &&
+                  responseSnapshot.data!.data != null) {
+                final gameId = responseSnapshot.data!.data.first['id'];
 
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text('Game Id: $gameId'),
-                          Selector<GameState, bool>(
-                            selector: (context, state) =>
-                                (state.player2CharacterType != null),
-                            builder: (context, hasPlayer2Joined, child) {
-                              return OutlinedButton(
-                                onPressed: hasPlayer2Joined
-                                    ? () {
-                                        final gameState =
-                                            Provider.of<GameState>(context,
-                                                listen: false);
-                                        Navigator.of(context).pushReplacement(
-                                          MaterialPageRoute(builder: (_) {
-                                            game.gameState = gameState;
+                gameState.setAsHost(gameId);
 
-                                            return const GamePlay();
-                                          }),
-                                        );
-                                      }
-                                    : null,
-                                child: Text(
-                                  hasPlayer2Joined
-                                      ? 'Start game'
-                                      : 'Waiting for other player',
-                                ),
-                              );
-                            },
-                          )
-                        ],
-                      );
-                    } else {
-                      return const CircularProgressIndicator();
-                    }
-                }
-              },
-            );
-          },
-        ),
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Game Id: $gameId',
+                      style: const TextStyle(fontSize: 25),
+                    ),
+                    Selector<GameState, bool>(
+                      selector: (context, state) =>
+                          (state.player2CharacterType != null),
+                      builder: (context, hasPlayer2Joined, child) {
+                        return OutlinedButton(
+                          onPressed: hasPlayer2Joined
+                              ? () {
+                                  gameRef.statGame();
+                                  gameRef.overlays.remove(HostGame.id);
+                                  gameRef.overlays.add(HUD.id);
+                                }
+                              : null,
+                          child: Text(
+                            hasPlayer2Joined
+                                ? 'Start game'
+                                : 'Waiting for other player',
+                            style: const TextStyle(fontSize: 25),
+                          ),
+                        );
+                      },
+                    ),
+                    OutlinedButton(
+                      onPressed: () {
+                        gameRef.overlays.remove(HostGame.id);
+                        gameRef.overlays.add(MainMenu.id);
+                      },
+                      child: const Text(
+                        'Back',
+                        style: TextStyle(fontSize: 25),
+                      ),
+                    ),
+                  ],
+                );
+              } else {
+                return const CircularProgressIndicator();
+              }
+          }
+        },
       ),
     );
   }

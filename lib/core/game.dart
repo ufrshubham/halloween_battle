@@ -9,56 +9,51 @@ import 'package:halloween_battle/core/character_details.dart';
 import 'package:halloween_battle/models/game_state.dart';
 import 'package:flame/parallax.dart';
 import 'package:halloween_battle/widgets/game_over.dart';
+import 'package:halloween_battle/widgets/hud.dart';
 
 enum PointType { hp, xp }
 
 class HalloweenBattleGame extends FlameGame with HasTappableComponents {
-  late GameState gameState;
+  GameState gameState = GameState();
   late Character player1;
   late Character player2;
+  late Size deviceSize;
 
   double _fullRectWidth = 0;
   bool isGameOver = false;
+  bool _isGameStarted = false;
 
-  @override
-  void onAttach() {
-    if (!isGameOver) {
-      player1 = Character(gameState.player1CharacterType, PlayerType.player1);
-      player2 = Character(gameState.player2CharacterType!, PlayerType.player2);
-
-      player1.position = Vector2(64,
-          (size.y - characterDetailsMap[player1.characterType]!.textureSize.y));
-
-      _fullRectWidth = (camera.canvasSize.x / 2) - 10 - 10;
-
-      player2.position = Vector2(size.x - 64,
-          (size.y - characterDetailsMap[player1.characterType]!.textureSize.y));
-
-      add(player1);
-      add(player2);
-    }
-    super.onAttach();
+  HalloweenBattleGame() {
+    gameState.gameRef = this;
   }
 
-  @override
-  void onDetach() {
-    if (isGameOver) {
-      player1.removeFromParent();
-      player2.removeFromParent();
-    }
-    super.onDetach();
+  void statGame() {
+    player1 = Character(gameState.player1CharacterType, PlayerType.player1);
+    player2 = Character(gameState.player2CharacterType!, PlayerType.player2);
+
+    player1.position = Vector2(64,
+        (size.y - characterDetailsMap[player1.characterType]!.textureSize.y));
+
+    _fullRectWidth = (camera.canvasSize.x / 2) - 10 - 10;
+
+    player2.position = Vector2(size.x - 64,
+        (size.y - characterDetailsMap[player1.characterType]!.textureSize.y));
+
+    add(player1);
+    add(player2);
+    overlays.add(HUD.id);
+    _isGameStarted = true;
   }
 
-  @override
-  void onRemove() {
-    // TODO: implement onRemove
-    super.onRemove();
+  void removePlayers() {
+    player1.removeFromParent();
+    player2.removeFromParent();
   }
 
   @override
   Future<void>? onLoad() async {
-    camera.viewport = FixedResolutionViewport(
-        Vector2(gameState.deviceSize.width, gameState.deviceSize.height));
+    camera.viewport =
+        FixedResolutionViewport(Vector2(deviceSize.width, deviceSize.height));
     final parallaxComponent = await ParallaxComponent.load(
       [ParallaxImageData('2_game_background.png')],
       fill: LayerFill.width,
@@ -71,10 +66,12 @@ class HalloweenBattleGame extends FlameGame with HasTappableComponents {
 
   @override
   void update(double dt) {
-    if (player1.hp == 0 || player2.hp == 0) {
-      pauseEngine();
-      isGameOver = true;
-      overlays.add(GameOver.id);
+    if (_isGameStarted) {
+      if (player1.hp == 0 || player2.hp == 0) {
+        pauseEngine();
+        isGameOver = true;
+        overlays.add(GameOver.id);
+      }
     }
     super.update(dt);
   }
@@ -82,24 +79,26 @@ class HalloweenBattleGame extends FlameGame with HasTappableComponents {
   @override
   void render(Canvas canvas) {
     super.render(canvas);
-    canvas.drawRRect(
-      _pointsToRRect(player1.hp.toDouble(), PlayerType.player1, PointType.hp),
-      Paint()..color = Colors.red,
-    );
-    canvas.drawRRect(
-      _pointsToRRect(player1.xp.toDouble(), PlayerType.player1, PointType.xp),
-      Paint()..color = Colors.blue,
-    );
+    if (_isGameStarted) {
+      canvas.drawRRect(
+        _pointsToRRect(player1.hp.toDouble(), PlayerType.player1, PointType.hp),
+        Paint()..color = Colors.red,
+      );
+      canvas.drawRRect(
+        _pointsToRRect(player1.xp.toDouble(), PlayerType.player1, PointType.xp),
+        Paint()..color = Colors.blue,
+      );
 
-    canvas.drawRRect(
-      _pointsToRRect(player2.hp.toDouble(), PlayerType.player2, PointType.hp),
-      Paint()..color = Colors.red,
-    );
+      canvas.drawRRect(
+        _pointsToRRect(player2.hp.toDouble(), PlayerType.player2, PointType.hp),
+        Paint()..color = Colors.red,
+      );
 
-    canvas.drawRRect(
-      _pointsToRRect(player2.xp.toDouble(), PlayerType.player2, PointType.xp),
-      Paint()..color = Colors.blue,
-    );
+      canvas.drawRRect(
+        _pointsToRRect(player2.xp.toDouble(), PlayerType.player2, PointType.xp),
+        Paint()..color = Colors.blue,
+      );
+    }
   }
 
   RRect _pointsToRRect(

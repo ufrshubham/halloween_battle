@@ -12,10 +12,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 enum PlayerType { player1, player2 }
 
 class GameState extends ChangeNotifier {
-  final Supabase supabase;
-  final HalloweenBattleGame gameRef;
+  late Supabase supabase;
+  late HalloweenBattleGame gameRef;
   SupabaseRealtimeClient? realtimeClient;
-  late Size deviceSize;
 
   static const String player1AttackKey = 'p1';
   static const String player2AttackKey = 'p2';
@@ -26,6 +25,21 @@ class GameState extends ChangeNotifier {
   static const String nextTurnKey = 'next-turn';
 
   Random random = Random();
+
+  void setAsHost(int id) {
+    gameId = id;
+    currentPlayerType = PlayerType.player1;
+    player1CharacterType = currentCharacterType;
+    player2CharacterType = null;
+  }
+
+  void setAsGuest(int id, Map<String, dynamic> map) {
+    gameId = id;
+    currentPlayerType = PlayerType.player2;
+    player2CharacterType = currentCharacterType;
+    player1CharacterType =
+        CharacterType.values.elementAt(map[player1CharacterTypeStr]);
+  }
 
   bool _isMyTurn = false;
   bool get isMyTurn => _isMyTurn;
@@ -84,14 +98,6 @@ class GameState extends ChangeNotifier {
       _gameId = id;
       _registerListener();
     }
-  }
-
-  GameState({
-    required this.supabase,
-    required this.gameRef,
-    required CharacterType characterType,
-  }) {
-    _currentCharacterType = characterType;
   }
 
   void _registerListener() {
@@ -255,6 +261,7 @@ class GameState extends ChangeNotifier {
           .execute();
     }
     currentPlayerType = null;
+    realtimeClient?.subscription.unsubscribe();
   }
 
   @override
