@@ -29,7 +29,7 @@ class CharacterSelection extends StatelessWidget {
                       SpriteAnimationData.sequenced(
                         amount: charDetails.value.amount,
                         stepTime: charDetails.value.stepTime,
-                        textureSize: Vector2.all(32),
+                        textureSize: charDetails.value.textureSize,
                       ),
                     ),
                     builder: (context, spriteAnimationSnapshot) {

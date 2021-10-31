@@ -39,6 +39,7 @@ class HostGame extends StatelessWidget {
                       gameState.currentPlayerType = PlayerType.player1;
                       gameState.player1CharacterType =
                           gameState.currentCharacterType;
+                      gameState.player2CharacterType = null;
                       gameState.gameId = gameId;
 
                       return Column(
@@ -58,6 +59,7 @@ class HostGame extends StatelessWidget {
                                         Navigator.of(context).pushReplacement(
                                           MaterialPageRoute(builder: (_) {
                                             game.gameState = gameState;
+
                                             return GameWidget(game: game);
                                           }),
                                         );

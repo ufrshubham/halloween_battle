@@ -12,6 +12,7 @@ class GameState extends ChangeNotifier {
   final Supabase supabase;
   final HalloweenBattleGame gameRef;
   SupabaseRealtimeClient? realtimeClient;
+  late Size deviceSize;
 
   static const String player1AttackKey = 'p1';
   static const String player2AttackKey = 'p2';
