@@ -1,16 +1,35 @@
-# halloween_battle
+# Halloween Battle
 
-A new Flutter project.
+A fun little 2D-PvP-turn based game written using the Flame engine for the very first Flame Game Jam!
 
-## Getting Started
+## Downloads
 
-This project is a starting point for a Flutter application.
+- [Itch.io](https://ufrshubham.itch.io/halloween-battle)
 
-A few resources to get you started if this is your first Flutter project:
+## Build steps
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+```bash
+# Clone this project
+$ git clone https://github.com/ufrshubham/halloween_battle
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+# Access
+$ cd halloween_battle
+
+# Install dependencies
+$ flutter pub get
+
+# Run the project (Make sure that a virtual or physical device is connected first)
+$ flutter run
+
+# The will start the game on any connected device.
+```
+
+## Supported platforms
+
+- Android
+
+## License
+
+Assets available in this repo are not owned by my. For more details about their origin and authors, check [assets/images/readme.md](assets/images/readme.md), [assets/audio/readme.md](assets/audio/readme.md) and [assets/fonts/Fruktur/OFL.txt](assets/fonts/Fruktur/OFL.txt)
+
+This project is under license from MIT. For more details, see the [LICENSE](LICENSE) file
