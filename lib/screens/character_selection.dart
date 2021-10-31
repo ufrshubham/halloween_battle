@@ -33,14 +33,16 @@ class CharacterSelection extends StatelessWidget {
                   ),
                   child: GestureDetector(
                     onTap: () {
-                      Provider.of<GameState>(context, listen: false)
-                          .currentCharacterType = charDetails.key;
+                      gameRef.gameState.currentCharacterType = charDetails.key;
                     },
                     child: GridTile(
-                      header: Text(
+                      footer: Text(
                         charDetails.key.toString().split('.')[1].toUpperCase(),
                         textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 25),
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.yellow.shade300,
+                        ),
                       ),
                       child: FutureBuilder<SpriteAnimation>(
                         future: SpriteAnimation.load(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:halloween_battle/core/audio_manager.dart';
 import 'package:halloween_battle/core/game.dart';
 import 'package:halloween_battle/models/game_state.dart';
 import 'package:halloween_battle/screens/main_menu.dart';
@@ -37,6 +38,8 @@ class GameOver extends StatelessWidget {
               gameRef.removePlayers();
               gameRef.overlays.remove(GameOver.id);
               gameRef.overlays.add(MainMenu.id);
+              AudioManager.instance.stopBgm();
+              AudioManager.instance.startBgm('witchsworkshop.ogg');
             },
             child: const Text('Main Menu', style: TextStyle(fontSize: 25)),
           )

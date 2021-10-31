@@ -37,8 +37,11 @@ class GamePlay extends StatelessWidget {
                 gameRef: gameRef,
               ),
           CharacterSelection.id: (context, HalloweenBattleGame gameRef) =>
-              CharacterSelection(
-                gameRef: gameRef,
+              ChangeNotifierProvider<GameState>.value(
+                value: gameRef.gameState,
+                child: CharacterSelection(
+                  gameRef: gameRef,
+                ),
               ),
           HUD.id: (context, HalloweenBattleGame gameRef) =>
               ChangeNotifierProvider<GameState>.value(

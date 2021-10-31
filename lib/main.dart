@@ -1,10 +1,8 @@
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
-import 'package:halloween_battle/core/character.dart';
+import 'package:halloween_battle/core/audio_manager.dart';
 import 'package:halloween_battle/core/game.dart';
-import 'package:halloween_battle/models/game_state.dart';
 import 'package:halloween_battle/screens/game_play.dart';
-import 'package:halloween_battle/screens/main_menu.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:halloween_battle/secrets.dart';
@@ -15,6 +13,8 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Flame.device.fullScreen();
   await Flame.device.setLandscape();
+  await AudioManager.instance
+      .init(['battleunderthemoonlight.ogg', 'witchsworkshop.ogg']);
   runApp(const MyApp());
 }
 

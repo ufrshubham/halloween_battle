@@ -19,58 +19,67 @@ class JoinGame extends StatelessWidget {
     gameState.supabase = Provider.of<Supabase>(context, listen: false);
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              decoration: const InputDecoration(
-                hintText: 'Game ID',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(10),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/2_game_background.png'),
+            fit: BoxFit.fitWidth
+          ),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextField(
+                decoration: const InputDecoration(
+                  hintText: 'Game ID',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(10),
+                    ),
                   ),
                 ),
+                style: const TextStyle(fontSize: 25),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                keyboardType: TextInputType.number,
+                keyboardAppearance: Brightness.dark,
+                onSubmitted: (value) async {
+                  final gameState = gameRef.gameState;
+                  final supabase = gameState.supabase;
+
+                  final response = await supabase.client
+                      .from(GameState.tableName + GameState.whereIdIs)
+                      .update({
+                        GameState.player2CharacterTypeStr:
+                            gameState.currentCharacterType.index,
+                      })
+                      .eq('id', value)
+                      .execute();
+
+                  if (response.status == 200 &&
+                      response.error == null &&
+                      response.data != null &&
+                      (response.data.length == 1)) {
+                    gameState.setAsGuest(int.parse(value), response.data[0]);
+                    gameRef.statGame();
+
+                    Navigator.of(context).pop();
+                  }
+                },
               ),
-              style: const TextStyle(fontSize: 25),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              keyboardType: TextInputType.number,
-              onSubmitted: (value) async {
-                final gameState = gameRef.gameState;
-                final supabase = gameState.supabase;
-
-                final response = await supabase.client
-                    .from(GameState.tableName + GameState.whereIdIs)
-                    .update({
-                      GameState.player2CharacterTypeStr:
-                          gameState.currentCharacterType.index,
-                    })
-                    .eq('id', value)
-                    .execute();
-
-                if (response.status == 200 &&
-                    response.error == null &&
-                    response.data != null &&
-                    (response.data.length == 1)) {
-                  gameState.setAsGuest(int.parse(value), response.data[0]);
-                  gameRef.statGame();
-
+              OutlinedButton(
+                onPressed: () {
+                  gameRef.overlays.add(MainMenu.id);
                   Navigator.of(context).pop();
-                }
-              },
-            ),
-            OutlinedButton(
-              onPressed: () {
-                gameRef.overlays.add(MainMenu.id);
-                Navigator.of(context).pop();
-              },
-              child: const Text(
-                'Back',
-                style: TextStyle(fontSize: 25),
+                },
+                child: const Text(
+                  'Back',
+                  style: TextStyle(fontSize: 25),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

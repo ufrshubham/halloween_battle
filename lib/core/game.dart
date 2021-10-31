@@ -4,6 +4,7 @@ import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:halloween_battle/core/audio_manager.dart';
 import 'package:halloween_battle/core/character.dart';
 import 'package:halloween_battle/core/character_details.dart';
 import 'package:halloween_battle/models/game_state.dart';
@@ -28,6 +29,9 @@ class HalloweenBattleGame extends FlameGame with HasTappableComponents {
   }
 
   void statGame() {
+    AudioManager.instance.stopBgm();
+    AudioManager.instance.startBgm('battleunderthemoonlight.ogg');
+    
     player1 = Character(gameState.player1CharacterType, PlayerType.player1);
     player2 = Character(gameState.player2CharacterType!, PlayerType.player2);
 
@@ -46,6 +50,10 @@ class HalloweenBattleGame extends FlameGame with HasTappableComponents {
   }
 
   void removePlayers() {
+    player1.hp = 0;
+    player1.xp = 0;
+    player2.hp = 0;
+    player2.xp = 0;
     player1.removeFromParent();
     player2.removeFromParent();
   }
@@ -61,15 +69,17 @@ class HalloweenBattleGame extends FlameGame with HasTappableComponents {
     add(parallaxComponent);
     overlays.remove(GameOver.id);
 
+    AudioManager.instance.startBgm('witchsworkshop.ogg');
+
     return super.onLoad();
   }
 
   @override
   void update(double dt) {
-    if (_isGameStarted) {
+    if (_isGameStarted && !isGameOver) {
       if (player1.hp == 0 || player2.hp == 0) {
-        pauseEngine();
         isGameOver = true;
+        overlays.remove(HUD.id);
         overlays.add(GameOver.id);
       }
     }
