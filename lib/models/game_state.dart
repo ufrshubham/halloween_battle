@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:halloween_battle/core/character.dart';
+import 'package:halloween_battle/core/character_details.dart';
 import 'package:halloween_battle/core/game.dart';
 import 'package:supabase/supabase.dart';
 // ignore: implementation_imports
@@ -20,8 +23,47 @@ class GameState extends ChangeNotifier {
   static const String player2CharacterTypeStr = 'p2Character';
   static const String whereIdIs = ':id=eq.';
   static const String tableName = 'HalloweenBattleBoard2P';
+  static const String nextTurnKey = 'next-turn';
 
-  PlayerType? currentPlayerType;
+  Random random = Random();
+
+  bool _isMyTurn = false;
+  bool get isMyTurn => _isMyTurn;
+  set isMyTurn(bool flag) {
+    _isMyTurn = flag;
+    notifyListeners();
+  }
+
+  String? _otherAttackKey;
+  PlayerType? _otherPlayerType;
+
+  String? _currentAttackKey;
+  PlayerType? _currentPlayerType;
+  PlayerType? get currentPlayerType => _currentPlayerType;
+  set currentPlayerType(PlayerType? type) {
+    _currentPlayerType = type;
+    switch (type) {
+      case PlayerType.player1:
+        _isMyTurn = true;
+        _otherPlayerType = PlayerType.player2;
+        _currentAttackKey = GameState.player1AttackKey;
+        _otherAttackKey = GameState.player2AttackKey;
+        break;
+      case PlayerType.player2:
+        _isMyTurn = false;
+        _otherPlayerType = PlayerType.player1;
+        _currentAttackKey = GameState.player2AttackKey;
+        _otherAttackKey = GameState.player1AttackKey;
+        break;
+      case null:
+        _isMyTurn = false;
+        _otherPlayerType = null;
+        _currentAttackKey = null;
+        _otherAttackKey = null;
+        break;
+    }
+  }
+
   CharacterType _currentCharacterType = CharacterType.ghost;
 
   CharacterType get currentCharacterType => _currentCharacterType;
@@ -36,6 +78,7 @@ class GameState extends ChangeNotifier {
   CharacterType? player2CharacterType;
 
   int _gameId = -1;
+
   set gameId(int id) {
     if (_gameId != id) {
       _gameId = id;
@@ -65,21 +108,140 @@ class GameState extends ChangeNotifier {
 
   void updateFromMap(Map<String, dynamic> map) {
     if (map['id'] == _gameId) {
-      final p1Attack = map['p1'];
-      final p2Attack = map['p2'];
       final nextTurn = map['next-turn'];
+
+      _isMyTurn = (nextTurn == currentPlayerType!.index);
 
       player2CharacterType =
           CharacterType.values.elementAt(map[player2CharacterTypeStr]);
 
-      if (nextTurn == 1) {
-        gameRef.player2DoAction(CharacterAction.charge);
-      } else if (nextTurn == 2) {
-        gameRef.player1DoAction(CharacterAction.charge);
+      if (nextTurn == 0) {
+        final attack = map['p2'];
+        if (attack != null) {
+          final p2Attack = CharacterAction.values.elementAt(attack);
+          gameRef.player2DoAction(p2Attack, map);
+        }
+      } else if (nextTurn == 1) {
+        final attack = map['p1'];
+        if (attack != null) {
+          final p1Attack = CharacterAction.values.elementAt(attack);
+          gameRef.player1DoAction(p1Attack, map);
+        }
       }
 
       notifyListeners();
     }
+  }
+
+  Future<void> requestAction(CharacterAction action) async {
+    int p1HP = gameRef.player1.hp;
+    int p1XP = gameRef.player1.xp;
+    int p2HP = gameRef.player2.hp;
+    int p2XP = gameRef.player2.xp;
+    bool p1Shield = gameRef.player1.isShieldActivated;
+    bool p2Shield = gameRef.player2.isShieldActivated;
+
+    switch (action) {
+      case CharacterAction.primaryAttack:
+      case CharacterAction.specialAttack:
+        final maxHP = characterDetailsMap[currentCharacterType]!
+            .actions[action]!
+            .maxHPGiven!;
+        final minHP = characterDetailsMap[currentCharacterType]!
+            .actions[action]!
+            .minHPGiven!;
+        final randomHP = (random.nextInt(maxHP - minHP) + minHP);
+
+        if (currentPlayerType == PlayerType.player1) {
+          p1Shield = false;
+          p1XP -= characterDetailsMap[currentCharacterType]!
+              .actions[action]!
+              .xpNeeded!;
+          p1XP = p1XP.clamp(0, 100);
+
+          if (!gameRef.player2.isShieldActivated) {
+            p2HP -= randomHP;
+            p2HP = p2HP.clamp(0, 100);
+          } else {
+            p2Shield = false;
+          }
+        } else if (currentPlayerType == PlayerType.player2) {
+          p2Shield = false;
+          p2XP -= characterDetailsMap[currentCharacterType]!
+              .actions[action]!
+              .xpNeeded!;
+          p2XP = p2XP.clamp(0, 100);
+
+          if (!gameRef.player1.isShieldActivated) {
+            p1HP -= randomHP;
+            p1HP = p1HP.clamp(0, 100);
+          } else {
+            p1Shield = false;
+          }
+        }
+
+        break;
+      case CharacterAction.charge:
+        final maxXP = characterDetailsMap[currentCharacterType]!
+            .actions[action]!
+            .maxXPGained!;
+        final minXP = characterDetailsMap[currentCharacterType]!
+            .actions[action]!
+            .minXPGained!;
+        final randomXP = (random.nextInt(maxXP - minXP) + minXP);
+
+        final maxHP = characterDetailsMap[currentCharacterType]!
+            .actions[action]!
+            .maxHPGained!;
+        final minHP = characterDetailsMap[currentCharacterType]!
+            .actions[action]!
+            .minHPGained!;
+        final randomHP = (random.nextInt(maxHP - minHP) + minHP);
+
+        if (currentPlayerType == PlayerType.player1) {
+          p1XP += randomXP;
+          p1XP = p1XP.clamp(0, 100);
+
+          p1HP += randomHP;
+          p1HP = p1HP.clamp(0, 100);
+        } else if (currentPlayerType == PlayerType.player2) {
+          p2XP += randomXP;
+          p2XP = p2XP.clamp(0, 100);
+
+          p2HP += randomHP;
+          p2HP = p2HP.clamp(0, 100);
+        }
+
+        break;
+      case CharacterAction.shield:
+        if (currentPlayerType == PlayerType.player1) {
+          p1Shield = true;
+          p1XP -= characterDetailsMap[currentCharacterType]!
+              .actions[action]!
+              .xpNeeded!;
+          p1XP = p1XP.clamp(0, 100);
+        } else if (currentPlayerType == PlayerType.player2) {
+          p2Shield = true;
+          p2XP -= characterDetailsMap[currentCharacterType]!
+              .actions[action]!
+              .xpNeeded!;
+          p2XP = p2XP.clamp(0, 100);
+        }
+        break;
+    }
+
+    await supabase.client
+        .from(GameState.tableName + GameState.whereIdIs + _gameId.toString())
+        .update({
+      _currentAttackKey: action.index,
+      GameState.nextTurnKey: _otherPlayerType!.index,
+      'p1HP': p1HP,
+      'p1XP': p1XP,
+      'p2HP': p2HP,
+      'p2XP': p2XP,
+      'p1Shield': p1Shield,
+      'p2Shield': p2Shield,
+    }).execute();
   }
 
   void reset() {

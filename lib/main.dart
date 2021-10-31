@@ -46,7 +46,11 @@ class MyApp extends StatelessWidget {
               child: MaterialApp(
                 title: 'Flutter Demo',
                 themeMode: ThemeMode.dark,
-                darkTheme: ThemeData.dark(),
+                darkTheme: ThemeData(
+                  brightness: Brightness.dark,
+                  scaffoldBackgroundColor: Colors.black,
+                  fontFamily: 'Fruktur',
+                ),
                 home: const HalloweenBattle(),
               ),
             );

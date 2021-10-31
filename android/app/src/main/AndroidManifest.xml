@@ -1,8 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.halloween_battle">
+    <uses-permission android:name="android.permission.INTERNET"/>
    <application
         android:label="halloween_battle"
         android:icon="@mipmap/ic_launcher">
+
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

@@ -25,7 +25,10 @@ class MainMenu extends StatelessWidget {
                     ),
                   );
                 },
-                child: const Text('Host')),
+                child: const Text(
+                  'Host',
+                  style: TextStyle(fontSize: 25),
+                )),
             OutlinedButton(
                 onPressed: () {
                   Navigator.of(context).push(
@@ -34,7 +37,10 @@ class MainMenu extends StatelessWidget {
                     ),
                   );
                 },
-                child: const Text('Join')),
+                child: const Text(
+                  'Join',
+                  style: TextStyle(fontSize: 25),
+                )),
             OutlinedButton(
               onPressed: () {
                 Navigator.of(context).push(
@@ -43,7 +49,10 @@ class MainMenu extends StatelessWidget {
                   ),
                 );
               },
-              child: const Text('Character'),
+              child: const Text(
+                'Character',
+                style: TextStyle(fontSize: 25),
+              ),
             ),
           ],
         ),

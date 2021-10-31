@@ -1,7 +1,7 @@
 import 'package:flame/components.dart';
 import 'package:flame/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:halloween_battle/core/character.dart';
+import 'package:halloween_battle/core/character_details.dart';
 import 'package:halloween_battle/models/game_state.dart';
 import 'package:provider/provider.dart';
 
@@ -11,19 +11,29 @@ class CharacterSelection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
+        child: GridView.builder(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 4,
+          ),
           itemCount: characterDetailsMap.length,
           itemBuilder: (context, index) {
             final charDetails = characterDetailsMap.entries.elementAt(index);
-            return SizedBox(
-              width: MediaQuery.of(context).size.width / 4,
-              child: Padding(
-                padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).size.height / 8,
-                ),
-                child: ListTile(
-                  title: FutureBuilder<SpriteAnimation>(
+            return Padding(
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(context).size.height / 8,
+              ),
+              child: GestureDetector(
+                onTap: () {
+                  Provider.of<GameState>(context, listen: false)
+                      .currentCharacterType = charDetails.key;
+                },
+                child: GridTile(
+                  header: Text(
+                    charDetails.key.toString().split('.')[1].toUpperCase(),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 25),
+                  ),
+                  child: FutureBuilder<SpriteAnimation>(
                     future: SpriteAnimation.load(
                       charDetails.value.assetPath,
                       SpriteAnimationData.sequenced(
@@ -40,8 +50,8 @@ class CharacterSelection extends StatelessWidget {
                           return const CircularProgressIndicator();
                         case ConnectionState.done:
                           return SizedBox(
-                            height: MediaQuery.of(context).size.width / 4,
-                            width: MediaQuery.of(context).size.width / 4,
+                            height: charDetails.value.textureSize.y * 5,
+                            width: charDetails.value.textureSize.x * 5,
                             child: Consumer<GameState>(
                               builder: (context, gameState, child) {
                                 return Container(
@@ -59,20 +69,13 @@ class CharacterSelection extends StatelessWidget {
                               },
                               child: SpriteAnimationWidget(
                                 animation: spriteAnimationSnapshot.requireData,
+                                anchor: Anchor.topCenter,
                               ),
                             ),
                           );
                       }
                     },
                   ),
-                  subtitle: Text(
-                    charDetails.key.toString().split('.')[1].toUpperCase(),
-                    textAlign: TextAlign.center,
-                  ),
-                  onTap: () {
-                    Provider.of<GameState>(context, listen: false)
-                        .currentCharacterType = charDetails.key;
-                  },
                 ),
               ),
             );

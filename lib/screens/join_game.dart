@@ -14,7 +14,10 @@ class JoinGame extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Join Game'),
+        title: const Text(
+          'Join Game',
+          style: TextStyle(fontSize: 25),
+        ),
       ),
       body: Center(
         child: TextField(
@@ -34,16 +37,20 @@ class JoinGame extends StatelessWidget {
             final supabase = Provider.of<Supabase>(context, listen: false);
             final gameState = Provider.of<GameState>(context, listen: false);
             final response = await supabase.client
-                .from(GameState.tableName + GameState.whereIdIs + value)
+                .from(GameState.tableName + GameState.whereIdIs)
                 .update({
-              GameState.player2CharacterTypeStr:
-                  gameState.currentCharacterType.index,
-            }).execute();
+                  GameState.player2CharacterTypeStr:
+                      gameState.currentCharacterType.index,
+                })
+                .eq('id', value)
+                .execute();
 
             if (response.status == 200 &&
                 response.error == null &&
-                response.data != null) {
+                response.data != null &&
+                (response.data.length == 1)) {
               final gameState = Provider.of<GameState>(context, listen: false);
+              gameState.currentPlayerType = PlayerType.player2;
               gameState.gameId = int.parse(value);
               gameState.player2CharacterType = gameState.currentCharacterType;
               gameState.updateFromMap(response.data[0]);

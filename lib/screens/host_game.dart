@@ -1,6 +1,7 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:halloween_battle/models/game_state.dart';
+import 'package:halloween_battle/screens/game_play.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase/supabase.dart' as supa;
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -60,7 +61,7 @@ class HostGame extends StatelessWidget {
                                           MaterialPageRoute(builder: (_) {
                                             game.gameState = gameState;
 
-                                            return GameWidget(game: game);
+                                            return const GamePlay();
                                           }),
                                         );
                                       }
