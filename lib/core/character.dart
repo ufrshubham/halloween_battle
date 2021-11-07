@@ -102,8 +102,15 @@ class Character extends PositionComponent
       config: TextPaintConfig(fontSize: 8.0, color: Colors.yellow.shade400),
     );
 
+    String playerText = '';
+    if (playerType == gameRef.gameState.currentPlayerType) {
+      playerText = 'You';
+    } else {
+      playerText = 'Other';
+    }
+
     final name = TextComponent(
-      playerType.toString().split('.')[1].toUpperCase(),
+      playerText,
       size: Vector2(10, 20),
       textRenderer: textPaint,
     )..anchor = Anchor.center;
@@ -158,6 +165,7 @@ class Character extends PositionComponent
       case CharacterAction.primaryAttack:
       case CharacterAction.specialAttack:
         final originalPosition = position.clone();
+        gameRef.camera.shake(duration: 0.5, intensity: 2);
         add(
           MoveEffect(
             path: [other.position, originalPosition],

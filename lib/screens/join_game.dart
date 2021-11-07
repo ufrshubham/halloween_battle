@@ -35,7 +35,7 @@ class JoinGame extends StatelessWidget {
                     ),
                   ),
                 ),
-                style: const TextStyle(fontSize: 25),
+                style: const TextStyle(fontSize: 35),
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 keyboardType: TextInputType.number,
@@ -71,7 +71,7 @@ class JoinGame extends StatelessWidget {
                 },
                 child: const Text(
                   'Back',
-                  style: TextStyle(fontSize: 25),
+                  style: TextStyle(fontSize: 35),
                 ),
               ),
             ],

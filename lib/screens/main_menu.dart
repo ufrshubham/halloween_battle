@@ -23,7 +23,7 @@ class MainMenu extends StatelessWidget {
               },
               child: const Text(
                 'Host',
-                style: TextStyle(fontSize: 25),
+                style: TextStyle(fontSize: 35),
               )),
           OutlinedButton(
             onPressed: () {
@@ -34,7 +34,7 @@ class MainMenu extends StatelessWidget {
             },
             child: const Text(
               'Join',
-              style: TextStyle(fontSize: 25),
+              style: TextStyle(fontSize: 35),
             ),
           ),
           OutlinedButton(
@@ -44,7 +44,7 @@ class MainMenu extends StatelessWidget {
             },
             child: const Text(
               'Character',
-              style: TextStyle(fontSize: 25),
+              style: TextStyle(fontSize: 35),
             ),
           ),
         ],

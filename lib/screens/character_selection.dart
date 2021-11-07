@@ -1,6 +1,7 @@
 import 'package:flame/components.dart';
 import 'package:flame/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:halloween_battle/core/character.dart';
 import 'package:halloween_battle/core/character_details.dart';
 import 'package:halloween_battle/core/game.dart';
 import 'package:halloween_battle/models/game_state.dart';
@@ -33,6 +34,49 @@ class CharacterSelection extends StatelessWidget {
                   child: GestureDetector(
                     onTap: () {
                       gameRef.gameState.currentCharacterType = charDetails.key;
+
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return Card(
+                              color: Colors.transparent,
+                              child: ListView(
+                                children: [
+                                  ListTile(
+                                    title: Text('Attack'),
+                                    subtitle: Text(
+                                      'HP Damage: ${charDetails.value.actions[CharacterAction.primaryAttack]!.maxHPGiven.toString()}-${charDetails.value.actions[CharacterAction.primaryAttack]!.minHPGiven.toString()}\nXP Cost: ${charDetails.value.actions[CharacterAction.primaryAttack]!.xpNeeded.toString()}',
+                                    ),
+                                  ),
+                                  ListTile(
+                                    title: Text('Charge'),
+                                    subtitle: Text(
+                                      'HP Gained: ${charDetails.value.actions[CharacterAction.charge]!.maxHPGained.toString()}-${charDetails.value.actions[CharacterAction.charge]!.minHPGained.toString()}\nXP Gained: ${charDetails.value.actions[CharacterAction.charge]!.maxXPGained.toString()}-${charDetails.value.actions[CharacterAction.charge]!.minXPGained.toString()}',
+                                    ),
+                                  ),
+                                  ListTile(
+                                    title: Text('Shield'),
+                                    subtitle: Text(
+                                      'XP Cost: ${charDetails.value.actions[CharacterAction.shield]!.xpNeeded.toString()}',
+                                    ),
+                                  ),
+                                  ListTile(
+                                    title: Text('Special Attack'),
+                                    subtitle: Text(
+                                      'HP Damage: ${charDetails.value.actions[CharacterAction.specialAttack]!.maxHPGiven.toString()}-${charDetails.value.actions[CharacterAction.specialAttack]!.minHPGiven.toString()}\nXP Cost: ${charDetails.value.actions[CharacterAction.specialAttack]!.xpNeeded.toString()}',
+                                    ),
+                                  ),
+                                  OutlinedButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text('Back'),
+                                  )
+                                ],
+                              ),
+                            );
+                          },
+                          barrierDismissible: true);
                     },
                     child: GridTile(
                       footer: Text(
@@ -78,10 +122,13 @@ class CharacterSelection extends StatelessWidget {
                                       child: child,
                                     );
                                   },
-                                  child: SpriteAnimationWidget(
-                                    animation:
-                                        spriteAnimationSnapshot.requireData,
-                                    anchor: Anchor.topCenter,
+                                  child: Card(
+                                    color: Colors.transparent,
+                                    child: SpriteAnimationWidget(
+                                      animation:
+                                          spriteAnimationSnapshot.requireData,
+                                      anchor: Anchor.topCenter,
+                                    ),
                                   ),
                                 ),
                               );
@@ -101,7 +148,7 @@ class CharacterSelection extends StatelessWidget {
             },
             child: const Text(
               'Back',
-              style: TextStyle(fontSize: 25),
+              style: TextStyle(fontSize: 35),
             ),
           )
         ],

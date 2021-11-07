@@ -2,7 +2,7 @@
     package="com.nobs.halloween_battle">
     <uses-permission android:name="android.permission.INTERNET"/>
    <application
-        android:label="halloween_battle"
+        android:label="Halloween Battle"
         android:icon="@mipmap/launcher_icon">
 
         <activity

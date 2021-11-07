@@ -42,7 +42,7 @@ class HostGame extends StatelessWidget {
                   children: [
                     Text(
                       'Game Id: $gameId',
-                      style: const TextStyle(fontSize: 25),
+                      style: const TextStyle(fontSize: 35),
                     ),
                     Selector<GameState, bool>(
                       selector: (context, state) =>
@@ -60,7 +60,7 @@ class HostGame extends StatelessWidget {
                             hasPlayer2Joined
                                 ? 'Start game'
                                 : 'Waiting for other player',
-                            style: const TextStyle(fontSize: 25),
+                            style: const TextStyle(fontSize: 35),
                           ),
                         );
                       },
@@ -72,7 +72,7 @@ class HostGame extends StatelessWidget {
                       },
                       child: const Text(
                         'Back',
-                        style: TextStyle(fontSize: 25),
+                        style: TextStyle(fontSize: 35),
                       ),
                     ),
                   ],

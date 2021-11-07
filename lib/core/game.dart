@@ -1,7 +1,9 @@
+import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
+import 'package:flame/particles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:halloween_battle/core/audio_manager.dart';
@@ -31,7 +33,7 @@ class HalloweenBattleGame extends FlameGame with HasTappableComponents {
   void statGame() {
     AudioManager.instance.stopBgm();
     AudioManager.instance.startBgm('battleunderthemoonlight.ogg');
-    
+
     player1 = Character(gameState.player1CharacterType, PlayerType.player1);
     player2 = Character(gameState.player2CharacterType!, PlayerType.player2);
 
@@ -65,6 +67,7 @@ class HalloweenBattleGame extends FlameGame with HasTappableComponents {
     final parallaxComponent = await ParallaxComponent.load(
       [ParallaxImageData('2_game_background.png')],
       fill: LayerFill.width,
+      priority: 0,
     );
     add(parallaxComponent);
     overlays.remove(GameOver.id);
@@ -72,6 +75,12 @@ class HalloweenBattleGame extends FlameGame with HasTappableComponents {
     AudioManager.instance.startBgm('witchsworkshop.ogg');
 
     return super.onLoad();
+  }
+
+  Random _random = Random();
+
+  Vector2 getRandomVector() {
+    return (Vector2.random(_random) - Vector2.random(_random)) * 0.5;
   }
 
   @override
@@ -83,6 +92,24 @@ class HalloweenBattleGame extends FlameGame with HasTappableComponents {
         overlays.add(GameOver.id);
       }
     }
+    final particleComponent = ParticleComponent(
+      Particle.generate(
+        count: 2,
+        lifespan: 5,
+        generator: (i) => AcceleratedParticle(
+          acceleration: getRandomVector(),
+          speed: getRandomVector(),
+          position: Vector2(_random.nextInt(size.x.toInt()).toDouble(),
+              _random.nextInt((size.y - 32).toInt()).toDouble()),
+          child: CircleParticle(
+            radius: 0.1,
+            paint: Paint()..color = Colors.yellow,
+          ),
+        ),
+      ),
+    );
+
+    add(particleComponent);
     super.update(dt);
   }
 
