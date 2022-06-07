@@ -1,13 +1,14 @@
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
-import 'package:flame/particles.dart';
 import 'package:flutter/material.dart';
 import 'package:halloween_battle/core/character_details.dart';
 import 'package:halloween_battle/core/game.dart';
 import 'package:halloween_battle/models/game_state.dart';
 
 enum CharacterType { ghost, vampire, werewolf, witch }
+
 enum AnimationType { idle }
+
 enum CharacterAction { primaryAttack, charge, shield, specialAttack }
 
 class ActionCosts {
@@ -99,7 +100,7 @@ class Character extends PositionComponent
     add(_spriteAnimationGroupComponent);
 
     TextPaint textPaint = TextPaint(
-      config: TextPaintConfig(fontSize: 8.0, color: Colors.yellow.shade400),
+      style: TextStyle(fontSize: 8.0, color: Colors.yellow.shade400),
     );
 
     String playerText = '';
@@ -110,7 +111,7 @@ class Character extends PositionComponent
     }
 
     final name = TextComponent(
-      playerText,
+      text: playerText,
       size: Vector2(10, 20),
       textRenderer: textPaint,
     )..anchor = Anchor.center;
@@ -125,21 +126,23 @@ class Character extends PositionComponent
 
   void displayPoints(int points, bool isNegative) {
     TextPaint textPaint = TextPaint(
-      config: const TextPaintConfig(fontSize: 15, color: Colors.red),
+      style: const TextStyle(fontSize: 15, color: Colors.red),
     );
     final name = TextComponent(
-      isNegative ? '-$points' : '+$points',
+      text: isNegative ? '-$points' : '+$points',
       size: Vector2(10, 20),
       textRenderer: textPaint,
     )..anchor = Anchor.center;
 
     name.add(
       SequenceEffect(
-        effects: [
-          MoveEffect(path: [Vector2(0, -80)], duration: 0.8),
-          OpacityEffect(
-            opacity: 0,
-            duration: 0.5,
+        [
+          MoveByEffect(
+            Vector2(0, -80),
+            LinearEffectController(0.8),
+          ),
+          OpacityEffect.fadeOut(
+            LinearEffectController(0.5),
           )
         ],
         onComplete: () {
@@ -164,13 +167,15 @@ class Character extends PositionComponent
     switch (action) {
       case CharacterAction.primaryAttack:
       case CharacterAction.specialAttack:
-        final originalPosition = position.clone();
+        // final originalPosition = position.clone();
         gameRef.camera.shake(duration: 0.5, intensity: 2);
         add(
-          MoveEffect(
-            path: [other.position, originalPosition],
-            duration: 1,
-            curve: Curves.fastLinearToSlowEaseIn,
+          MoveToEffect(
+            other.position,
+            EffectController(
+              duration: 1,
+              curve: Curves.fastLinearToSlowEaseIn,
+            ),
             onComplete: () {
               if (playerType == PlayerType.player1) {
                 hp = p1HP;
@@ -198,6 +203,7 @@ class Character extends PositionComponent
             },
           ),
         );
+
         break;
       case CharacterAction.charge:
         if (playerType == PlayerType.player1) {

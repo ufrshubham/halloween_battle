@@ -29,8 +29,11 @@ class MainMenu extends StatelessWidget {
             onPressed: () {
               gameRef.overlays.remove(MainMenu.id);
               // gameRef.overlays.add(JoinGame.id);
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => JoinGame(gameRef: gameRef)));
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => JoinGame(gameRef: gameRef),
+                ),
+              );
             },
             child: const Text(
               'Join',

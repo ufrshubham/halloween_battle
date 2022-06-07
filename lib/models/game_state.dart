@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:halloween_battle/core/character.dart';
 import 'package:halloween_battle/core/character_details.dart';
 import 'package:halloween_battle/core/game.dart';
-import 'package:supabase/supabase.dart';
 // ignore: implementation_imports
 import 'package:supabase/src/supabase_realtime_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';

@@ -1,4 +1,3 @@
-import 'package:flame/components.dart';
 import 'package:flame/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:halloween_battle/core/character.dart';

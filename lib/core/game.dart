@@ -2,9 +2,7 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/game.dart';
-import 'package:flame/input.dart';
 import 'package:flame/particles.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:halloween_battle/core/audio_manager.dart';
 import 'package:halloween_battle/core/character.dart';
@@ -16,7 +14,7 @@ import 'package:halloween_battle/widgets/hud.dart';
 
 enum PointType { hp, xp }
 
-class HalloweenBattleGame extends FlameGame with HasTappableComponents {
+class HalloweenBattleGame extends FlameGame with HasTappables {
   GameState gameState = GameState();
   late Character player1;
   late Character player2;
@@ -92,8 +90,9 @@ class HalloweenBattleGame extends FlameGame with HasTappableComponents {
         overlays.add(GameOver.id);
       }
     }
-    final particleComponent = ParticleComponent(
-      Particle.generate(
+
+    final particleComponent = ParticleSystemComponent(
+      particle: Particle.generate(
         count: 2,
         lifespan: 5,
         generator: (i) => AcceleratedParticle(

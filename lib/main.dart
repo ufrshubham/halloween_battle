@@ -4,7 +4,7 @@ import 'package:halloween_battle/core/audio_manager.dart';
 import 'package:halloween_battle/core/game.dart';
 import 'package:halloween_battle/screens/game_play.dart';
 import 'package:provider/provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' show Supabase;
 import 'package:halloween_battle/secrets.dart';
 
 final game = HalloweenBattleGame();

@@ -5,7 +5,7 @@ import 'package:halloween_battle/screens/main_menu.dart';
 import 'package:halloween_battle/widgets/hud.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase/supabase.dart' as supa;
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' show Supabase;
 
 class HostGame extends StatelessWidget {
   static const String id = 'HostGame';
@@ -24,6 +24,7 @@ class HostGame extends StatelessWidget {
               gameState.currentCharacterType.index
         }).execute(),
         builder: (_, responseSnapshot) {
+          print(responseSnapshot.data);
           switch (responseSnapshot.connectionState) {
             case ConnectionState.none:
             case ConnectionState.waiting:
