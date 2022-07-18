@@ -47,6 +47,7 @@ class GameState extends ChangeNotifier {
     notifyListeners();
   }
 
+  // ignore: unused_field
   String? _otherAttackKey;
   PlayerType? _otherPlayerType;
 

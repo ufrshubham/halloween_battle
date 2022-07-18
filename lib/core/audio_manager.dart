@@ -29,6 +29,6 @@ class AudioManager {
   }
 
   void playSfx(String fileName) {
-    FlameAudio.audioCache.play(fileName);
+    FlameAudio.play(fileName);
   }
 }
