@@ -168,6 +168,7 @@ class Character extends PositionComponent
       case CharacterAction.primaryAttack:
       case CharacterAction.specialAttack:
         // final originalPosition = position.clone();
+        // ignore: deprecated_member_use
         gameRef.camera.shake(duration: 0.5, intensity: 2);
         add(
           MoveToEffect(

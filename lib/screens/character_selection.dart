@@ -129,7 +129,7 @@ class CharacterSelection extends StatelessWidget {
                                       anchor: Anchor.topCenter,
                                       animationTicker: spriteAnimationSnapshot
                                           .requireData
-                                          .ticker(),
+                                          .createTicker(),
                                     ),
                                   ),
                                 ),
